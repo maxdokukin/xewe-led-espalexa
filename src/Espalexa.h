@@ -48,6 +48,8 @@
 #endif
 #include <WiFiUdp.h>
 
+//#define ESPALEXA_DEBUG
+
 #ifdef ESPALEXA_DEBUG
  #pragma message "Espalexa 2.7.0 debug mode"
  #define EA_DEBUG(x)  Serial.print (x)
@@ -75,6 +77,7 @@ private:
   #endif
   uint8_t currentDeviceCount = 0;
   bool discoverable = true;
+  bool responded_to_search=false;
   bool udpConnected = false;
 
   EspalexaDevice* devices[ESPALEXA_MAXDEVICES] = {};
@@ -236,7 +239,7 @@ private:
         "</root>"),s,s,escapedMac.c_str(),escapedMac.c_str());
           
     server->send(200, "text/xml", buf);
-    
+    responded_to_search = true;
     EA_DEBUGLN("Send setup.xml");
     EA_DEBUGLN(buf);
   }
@@ -603,7 +606,9 @@ public:
     uint16_t perc = bri * 100;
     return perc / 255;
   }
-  
+
+  const bool get_responded_to_search() { return responded_to_search; }
+
   ~Espalexa(){} //note: Espalexa is NOT meant to be destructed
 };
 
